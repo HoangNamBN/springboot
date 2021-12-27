@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html lang="en" xmlns:sec="http://www.w3.org/1999/xhtml">
+    <section class="sidebar" xmlns:th="http://www.w3.org/1999/xhtml" xmlns:sec="http://www.w3.org/1999/xhtml">
+        <div class="user-panel">
+            <div class="pull-left image">
+                <img src="../../static/image/avatar.jpg" class="img-circle" alt="User Image" />
+            </div>
+            <div class="pull-left info">
+                <p sec:authentication="principal.username"></p>
+                <a href="#"><i class="fa fa-circle text-success"></i> Online</a>
+            </div>
+        </div>
+        <ul class="sidebar-menu">
+            <li class="header">MAIN NAVIGATION</li>
+            <li class="active treeview">
+                <a href="#">
+                    <i class="fa fa-th"></i> <span>Options</span>
+                    <span class="pull-right-container"><i class="fa fa-angle-left pull-right"></i></span>
+                </a>
+                <ul class="treeview-menu">
+                    <li class="active"><a th:href="@{/product/list}"><i class="fa fa-circle-o"></i> Product</a></li>
+                    <li><a th:href="@{/producttype/list}"><i class="fa fa-circle-o"></i> Product Type</a></li>
+                    <li sec:authorize="isAuthenticated()"><a th:href="@{/logout}"><i class="fa fa-circle-o"></i> Logout</a></li>
+                </ul>
+            </li>
+        </ul>
+    </section>
+</html>

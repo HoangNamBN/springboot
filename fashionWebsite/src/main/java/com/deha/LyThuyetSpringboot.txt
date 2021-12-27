@@ -1,0 +1,361 @@
+BUỔI 1: TÌM HIỂU VỀ SPRING BOOT, CÁCH TẠO PROJECT VÀ CHẠY HELLO WORLD
+1. Spring Boot là gì ?
+- Spring Boot là một dự án phất triển JAV trong hệ sinh thái framework
+- giúp đơn giản hóa quá trình lập trình 1 ứng dụng spring.
+
+2. Tại sao lại nên sử dụng Spring Boot
+- cung cấp linh hoạt để định cấu hình Java Beans, cấu hình xml, và giao dịch cơ sở dữ liệu.
+- xử lý hàng loạt mạnh mẽ, không cần cấu hình thủ công mọi thứ đều được cấu hình một cách tự động
+- dễ dàng quản lý sự phụ thuộc (là các dependecy được sử dụng trong dự án).
+- ...
+
+3. Cách tạo một project Spring Boot
+- có thể xem link youtobe
+- khi tạo xong thêm dòng này vào pom.xml
+
+4. Di chuyển đến file pom.xml, tìm hiểu các giá trị trong đó
+
+
+5. Cấu hình tự động ( file trong thư mục java)
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+
+@EnableAutoConfiguration:
+// tự động cấu hình ứng dụng Spring dựa trên các phụ thuộc JAR mà đã thêm trong dự án.
+// ví dụ csdl mysql nằm trong đường dẫn lớp mà chưa định cấu hình bất kỳ kế nối csdl nào thì Spring boot sẽ tự động cấu hình csdl trong bộ nhớ
+// ngoài ra có thể sử dụng @SpringBootApplication thay cho @EnableAutoConfiguration
+public class DemoApplication {
+   public static void main(String[] args) {
+      SpringApplication.run(DemoApplication.class, args);
+   }
+}
+
+6. Tìm hiểu @controller và @RestController 
+- @Controller:
+    + @Controller sẽ được sử dụng với @RequestMapping trên các phương thức để xủ lỹs các request
+    @Controller
+    @RequestMapping("books")
+    public class SimpleBookController {
+
+        @GetMapping("/{id}", produces = "application/json")
+        public @ResponseBody Book getBook(@PathVariable int id) {
+            return findBookById(id);
+        }
+
+        private Book findBookById(int id) {
+            // ...
+        }
+    }
+    @ResponseBody để đánh dấu phương thức xử lý các request. Sẽ tự động trả các đối tượng vào HttpResponse
+- @RestController:
+   + @RestController: là sự kết hợp của @Controller và # ResponseBody giúp xậy dựng cáp RESTful APO dễ dàng hơn
+   + @GetMApping để đánh dấu phương thức này là GET
+
+---> BÀI TẬP: xây dựng request api  với @GetMapping là "hello-world" hiển thị dòng chữ "hello world!"
+
+NOTE: NẾU GẶP PHẢI LỖI NÀY Error starting ApplicationContext. To display the conditions report re-run your application with 'debug' enabled thì thay đổi đường dẫn port và xóa hết những dependecition liên quan đến cơ sở dữ liệu đi
+
+============================================================================================================================================================
+BUỔI 2: CÁCH TẠO TỆP WAR VÀ TRIỂN KHAI ỨNG DỤNG SPRING BOOT TRONG MÁY CHỦ WEB TOMCAT
+- TRong file JavaWebApplication cho phép triển khai tệp JAR
+- Cần mở rộng lớp SpringBootServlertInitializer để hỗ trợ triển khai tệp WAR
+thêm đoạn mã sau vào
+@SpringBootApplication
+public class DemoApplication  extends SpringBootServletInitializer {
+   @Override
+   protected SpringApplicationBuilder configure(SpringApplicationBuilder application) {
+      return application.sources(DemoApplication.class);
+   }
+   public static void main(String[] args) {
+      SpringApplication.run(DemoApplication.class, args);
+   }
+}
+Giải thích:
+    + mình sẽ kế thừa từ SpringBoootSerrvletInitializer và ghi đề phương thức congigure
+    + thêm dòng code này trong file pom.xml <packaging>war</packaging>
+--> sau đó viết một cái request đơn giản trả về dòng chữ hello world with Tomcat
+sau khi viết xong chuyển qua đóng gói ứng dụng
+- tạo War với lệnh mvn package hoặc chọn vào Maven ấn package
+
+==========================================================================
+
+Buổi 3: Mô hình MVC
+- Mô hình MVC (Model view controller): gồm 3 phần như tên
+    + Model: các cấu trúc dữ liệu
+    + View: lớp giao diện, dùng để hiển thị dữ liệu cho user xem và tương tác
+    + Controller: kết nối Model với View, điều khiển dòng dữ liệu
+- Tức là dữ liệu từ Model qua COntroller sau đó được gửi cho View hiển thị ra.
+    Ngược lại, khi có yêu cầu mới từ View thì sẽ qua Controller thực hiện thay đổi dữ liệu của Model
+==> MVC chỉ mô tả luồng đi chứ không nói rõ code đặt ở đầu rồi lưu trữ Model vào database kiểu gì
+
+ÁP DỤNG VÀO SPRING BOOT:
+- 1 ứng dụng SpringBoot hoàn chỉnh gồm các phần sau:
+    + Controller: trả về View(cos chứa data sẵn dạng html)
+      hoặc Model thể hiện dưới dạng API cho View
+    + Service: chứa các code tính toán, xử lý. Khi Controller yêu cầu thì Service tương tứng sẽ tiếp nhận và cho ra dữ liệu
+      trả cho Controller. Controller sẽ gửi về View
+    + Repository: Service còn có thẻ tương tác với service khác hoặc dùng Repository để gọi db.
+        Repository là thằng trực tiếp tương tác, đọc ghi dữ liệu trong DB và trả về cho service.
+
+================================================================================
+SPRING BOOT BASIC
+================================================================================
+BUỔI 1: COMPONENT AND AUTOWIRE
+1. @component
+- là một annotation của class, cho phép đánh dấu class Java 1 Bean hoặc Dependency
+2. @autowire
+- là một annotation của class
+- được sử dụng trên các method setter, instance variable, contructor.
+  (hiểu đơn giản là nó có thể gọi các thuộc tính mà không phải tạo ra hàm getter, setter)
+
+--> Bean được quản lý bên trong ApplicationContext đều là simgleton.
+--> đều được tạo ra một lần duy nhất và khi class yêu cầu @Autowired thì nó sẽ tạo ra một đối tượng có sẵn
+    trong ApplicationContext để thêm vào.
+
+- TRong trường hợp mỗi lần run là 1 instance mới thì đánh dấu componet đó bằng @Scope("prototype")
+--------------------------------------------------------------------------------
+
+BUỔI 2: @AUTOWIRED - @PRIMARY - @QUALIFIER
+1. @autowired
+- Nếu mà class không có contructor hay setter thì sẽ đưa đối tượng vào thuộc tính có đánh dấu là @autowired
+- Nếu có hàm contructor thì sẽ inject Bean vào bỏiw tham số của hàm
+- Nếu mà có hàm setter thì sẽ inject Bean vào bởi tham số của hàm
+NOTE: có thể gắn @Autowired lên trên method thay vì đánh dấu lên trên thuộc tính, nó sẽ tìm Bean phù hợp với method đó và truyền vào.
+- khi 2 class cùng kế thừa (implement 1 class) thì khi ấy sử dụng @Autowired sẽ tìm được 2 đối tượng cùng thỏa mãn
+--> không biết sử dụng cái nào đê inject vào trong đối tượng khác
+--> sinh ra lỗi khi ấy cách giải quyết là dùng annotation @Primary hoặc dùng annotation @Qualifier
+
+2. @Primary
+- đánh dấu trên một bean, giúp nó luôn được ưu tiên lựa chọn trong trường hợp nhiều Bean cùng loại trong Context
+
+3. @Qualifier
+- đánh dấu trên một bean, giúp chỉ định bean mà người dùng muốn chỉ định inject
+
+@Component("bikini")
+public class A implement C{
+    @Override
+    public void wear() {
+        System.out.println("Mặc bikini");
+    }
+}
+
+
+@Component("Naked")
+public class B implement C{
+    @Override
+    public void wear() {
+        System.out.println("Không mặc bikini");
+    }
+}
+
+@Component
+public class Girl{
+    C c;
+    public Girl(@Qualifier("Naked") C c){
+    	this.c = c;
+    }
+}
+
+---> khi ấy nó sẽ chỉ định C trong Girl là không mặc bikini;
+-----------------------------------------------------------------------
+
+BUỔI 3: Vòng đời của Bean, @PostConstruct and @PreDestroy
+1. @PostConstruct
+- đánh dấu trên một method duy nhất bên trong Bean.
+- ApplicationContext sẽ gọi hàm này sau khi một Bean được tạo ra và quản lý.
+
+2. @PreDestroy
+- đánh dấy trên một method duy nhất bên trong Bean
+- ApplicationContext sẽ gọi hàm này trước khi một Bean được xóa hoặc không được quản lý nữa
+
+3. Bean life cycle
+
+- khi ApplicationContext tìm thấy 1 Bean cần quản lý, nó sẽ khởi tạo bằng COnstructor
+- inject dependencies vào Bean bằng hamf Setter, thực hiện các quá trình cài đặt khác vào Bean như setBeanName, ...
+- sau đó hàm đánh dấu với annotation @PostConstruct được gọi.
+- Tiền xử lý sau khi @PostConstruct được gọi
+- Bean sẵn sàng hoạt động.
+- Nếu không quản lý bean nữa hoặc bị shutdown nó sẽ gọi @PreDestroy trong Bean và xóa Bean.
+
+ví dụ 
+public class Girl{
+   @PostConstruct
+   public void postConstruct(){
+   	sout("Đối tượng Girl được khởi tạo xong sẽ chạy hàm này");
+   }
+	
+   @PreDestroy
+   public void preDestroy(){
+   	sout("Đối tượng Girl trước khi bị destroy thì chạy hàm naỳ");
+   }
+
+}
+
+------------------------------------------------------------------------------------------
+BUỔI 4: @Component with @Service with @Repository
+1. Kiến trúc trong Spring Boot
+- kiến trúc MVC trong Spring Boot được xây dựng dựa trên tư tưởng "độc lập" kết hợp với nguyên lý hướng đối tượng. Độc lập tức là các layer phục vụ với mục đích nhất định, thực hiện một công việc ngoài phạm vi thif sẽ đưa công việc xuông layer thấp hơn.
+
+- Kiến trúc Controller - Service - Repository chia project thành 3 lớp:
+
++ Controller: giao tiếp với bên ngoài và xử lý các request từ bên ngoài tới hệ thống
++ Service: thực hiện các nghiệp vụ và sử lý logic
++ Repository: chịu trách nhiệm giao tiếp với các DB, xử lý query và trả về các kiểu dữ liệu mà   tầng service yêu cầu.
+
+
+--> Để phục vụ cho kiến trúc ở trên thì Spring Boot tạo ra 3 annotation là @Controller, @Service, @Repository để đánh dấu các tầng với nhau.
++ @Service: đánh dấu 1 class là tầng Service phục vụ cho logic nghiệp vụ
++ @Repository: đánh dấu 1 class là tầng Repository phục vụ cho truy xuất dữ liệu.
+
+
+NOTE: 3 annotation @Component, @Service, @Repository về bản chất nó đề là đánh dấu 1 class cho biết đó là Bean, có thể thay đổi cho nhau mà không ảnh hưởng gì. Nhưng ở góc độ thiết kế thì cần phải phân rõ 
++ @service: gắn cho các Bean đảm nhiệm xử lý logic
++ @Repository: gắn cho các Bean đảm nhiệm giao tiếp với DB 
++ @Component: gắn cho các Bean khác
+
+---------------------------------------------------------------------------------------------
+BÀI 5: component scan là gì ?
+- component scan: cho phép tìm kiếm các Bean trong một package nhất định.
+- Nếu không có annotation @ComponentScan thì nó sẽ tìm kiếm được tất cả các Bean cùng class App và những package con nằm bên cạnh App
+- có 2 cách để chỉ định các Bean:
+  Cách 1: Dùng @ComponentScan("đường dẫn đến package chứa Bean cần chỉ định")
+  Cách 2: Dùng scanBasePackages trong @SpringBootApplocation(scanBasePackages= "đường dãn đến 	packeage chưa Bean cần chỉ định")
+  
+---------------------------------------------------------------------------------------------
+BÀI 6: @Configuration with @Bean
+1. @Configuration
+- là 1 annotation đánh dấu trên một class
+- cho phép Spring Boot biết được đaya là nơi định nghĩa các ra Bean
+
+2. @Bean
+- là 1 annotation được đánh dấu trên một method.
+- cho phép SpringBoot biết được đây là Bean và sẽ thực hiện đưa Bean này vào context.
+
+
+Hoạt động: Dù không sử dụng annotation là @Component nhưng mà vẫn được quản lý trong COntext của SpringBoot
+
+-------------------------------------------------------------------------------------------
+BÀI 7: Config and @Value
+
+1. Config
+- trong Spring Boot các thông tin cấu hình mặc định được lấy từ file applications,properties
+- ví dụ muốn thay đổi port 8081 thay vì 8080 thì viết server.port = 8081
+
+2. @Value
+- cấu hình thông tin cho bài toán với những giá trị riêng biệt
+- ví dụ muốn cấu hình cho thông tin database từ bên ngoài ứng dụng thì:
+loda.mysql.url = jdbc:mysql://host1:3306/loda
+
+- @value được sử dụng trên thuộc tính của class
+
+public class AppConfig {
+    // Lấy giá trị config từ file application.properties
+    @Value("${loda.mysql.url}")
+    String mysqlUrl;
+}
+
+Tạo ra môtj chương trình hoàn chỉnh
+1. Tạo ra file DatabaseConnect:
+   + thuộc tính: url
+   + phương thức: abstract connect
+   + setter, getter
+2. Tạo file MysqlCOnnect extends DatabaseConnect ghi đè phương thức connect
+3. Tạo file cấu hình AppConfig
+   + thuộc tính: mysqlUrl được sử dụng @Value("${tên biến chỉ đến đường dẫn trong file properties}")
+   + sử dụng Bean tạo ra một file mysqlConfig()
+   + tạo ra đối tượng DatabaseConnect là mysqlConnnector truyền tham số url được định nghĩa ở trên và return mysqlConnect
+
+
+----------------------------------------------------------------------------------------------
+BÀI 8: TẠO WEB HELLOWORLD VỚI @Controller + Thymeleaf
+
+1. Thymeleaf
+- đây là 1 template hỗ trợ tạo ra các file html để trả thông tin cho người dùng
+- Cus pháp của Thymeleaf sẽ là một thuộc tính của thể HTML và bắt đầu bằng chữ th:
+<h1 th:text = "${name}" > </h1>: có nghĩa là truyền dữ liệu từ biến name vào thẻ h1 
+
+
+2. @Controller
+- là nơi tiếp nhận các thông tin request từ phía ngươif dùng,
+- nhận yêu cầu và chuyển các yêu cầu này xuống cho tầng @Service xử lý logic
+- Bản thân @Controller cũng là một @Component
+
+3. Model & View trong SPring Boot
+- Model là một đối tượng dùng để lưu trữ thông tin và để generate ra webpage có thể hiểu nó là context của THymeleaf
+- Model lưu trữ thông tin dưới dạng key- value
+- Một số cú pháp
+   + ${ ... }: giá trị của một biến
+   + { ... }: giá trị cuả một biến chỉ định
+   + #{ ...}: lấy message
+   + @{ ... }: lấy đường dẫn url dựa vào context caut server
+
+-------------------------------------------------------------------------------------------------
+BÀI 9: @RequestMapping, @PostMapping,, @ModelAtrribute, @RequestParam + Web todo với Thymeleaf
+
+1. Nhắc lại một số HTTP request method
+- GET: dùng để lấy thông tin từ Server đã cung cấp với sử dụng URL đã cung cấp. tức là chỉ nhận dữ liệu
+- POST: gửi dữ liệu tới server
+
+2. @PostMapping
+- đánh dấu hàm xử lý POST request trong Controller
+@Controller
+public class WebController {
+    @GetMapping("/addTodo")
+    public String addTodo(Model model) {
+        return "addTodo";
+    }
+
+    @PostMapping("/addTodo")
+    public String addTodo(Model model) {
+        return "success";
+    }
+}
+
+3. @RequestMapping
+- muốn tất cả các method dùng chung một cách xử lý
+ví dụ: 
+@RequestMapping("api")
+Mà khi sử dụng @GetMapping("hello") thì khi truy cập đường dẫn sẽ là localhost:port/api/hello
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

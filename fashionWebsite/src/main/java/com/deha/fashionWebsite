@@ -1,0 +1,32 @@
+Xây dựng bài toán
+1. Spring Security
+- Spring Security cung cấp 2 cơ chế cơ bản
+    + Authentication (xác thực): là 1 tiến trình thiết lập 1 principal.
+        Principal có thể hiểu là 1 người, 1 thiết bị, 1 hệ thống có thể thực hiện một hành động của ứng dụng
+    + Authorization (phân quyền): là tiến trình quyết ddijng xem một principal có được cho phép
+        thực hiện một hành động trong ứng dụng của bạn hay không.
+        Trước khi tiến tới Autho thì principal cần được thiêt lập bởi Authentication
+- UserDetailService là một interface có duy nhât 1 phương thức là loadUserByUsername trả về
+
+2. JWT
+- JWT là viết tắt của Json Web Token là một chuỗi mã hóa được gửi kèm trong header của client request có tác dụng
+giúp phía server xác thực request nguời dùng có hợp lệ hay không.
+
+
+
+THỰC HIỆN BÀI TOÁN
+Bước 1: Thực hiện cấu hình việc kết nối tới mysql tại file application.properties
+
+Bước 2: Xác định các thực thể của bài toán hay nói cách khác là tạo ra package entity
+- Role: vai trò
+- User : User có thể có 1 hoặc nhiều vai trò
+- Product Type
+- Product
+--> Mỗi một thực thể sẽ đại diện cho một bảng trong cơ sở dữ liệu
+
+Bước 3: Để thực hiện với cơ sở dữ liệu thì tạo ra tầng Repository
+Bước 4: Tạo ra tầng dto để thực hiện việc thêm một User mới hay cách khác là đóng gói tất cả các thông tin cần thiết cho nó
+Bước 5: Tạo ra package service để thực hiện nhận yêu cầu từ controller
+    khi ấy các service sẽ yêu cầu tầng repository thực hiện việc thao tác với dữ liệu
+Bước 6: Khi đã tạo xong tầng service thì thực hiện việc thiết lập config
+Bước 7:
